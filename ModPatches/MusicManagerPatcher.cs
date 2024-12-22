@@ -11,6 +11,7 @@ namespace NULL.ModPatches;
 [HarmonyPatch(typeof(MusicManager))]
 internal class MusicManagerPatcher
 {
+   // internal static Dictionary<string, bool> MidisWasChanged = new() { { "BossIntro", false }, { "BossLoop", false } };
     [HarmonyPatch("MidiEvent")]
     static void Postfix(MusicManager __instance, List<MPTKEvent> midiEvents)
     {
@@ -37,6 +38,15 @@ internal class MusicManagerPatcher
             }
         }
     }
+    /*   [HarmonyPatch("MidiEvent")]
+       static void Prefix(MidiFilePlayer ___midiPlayer, List<MPTKEvent> midiEvents)
+       {
+           if (___midiPlayer.MPTK_MidiName == "custom_BossIntro" && !midiEvents.Contains(x => x.Info == "Loop"))
+               MidisWasChanged["BossIntro"] = true;
+
+           if (___midiPlayer.MPTK_MidiName == "custom_BossLoop" && !midiEvents.Contains(x => x.Command == MPTKCommand.MetaEvent && x.Meta == MPTKMeta.TextEvent))
+               MidisWasChanged["BossLoop"] = true;
+       }*/
 
     [HarmonyPatch(nameof(MusicManager.PlayMidi))]
     [HarmonyPrefix]

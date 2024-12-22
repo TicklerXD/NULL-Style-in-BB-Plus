@@ -1,4 +1,18 @@
-﻿using HarmonyLib;
+﻿/*
+* Copyright (c) 2024 PixelGuy123
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in
+* all copies or substantial portions of the Software.
+*/
+
+using HarmonyLib;
 using MTM101BaldAPI;
 using MTM101BaldAPI.AssetTools;
 using NULL;
@@ -499,5 +513,14 @@ public static class GenericExtensions
             res += en.Current.ToString() + "\n";
 
         return res;
+    }
+
+    public static SceneObject SetLevel(this SceneObject scene, LevelObject ld) // Initially, the method was named "SetupLevel", which led to Windows Defender defining the mod as a trojan, LMAO
+    {
+        scene.levelObject = ld;
+        scene.additionalNPCs = ld.additionalNPCs;
+        scene.potentialNPCs = ld.potentialNPCs;
+        scene.forcedNpcs = ld.forcedNpcs;
+        return scene;
     }
 }

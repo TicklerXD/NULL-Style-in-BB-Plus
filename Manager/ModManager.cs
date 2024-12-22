@@ -39,8 +39,6 @@ internal static partial class ModManager
 
             if (!value) 
                 GlitchStyle = false;
-
-           // TryRunMethodIfModInstalled("pixelguy.pixelmodding.baldiplus.bbextracontent", () => BBTimes.Plugin.BooleanStorage.endGameMusic = !value);
         }
     }
     public static bool GlitchStyle
@@ -179,8 +177,7 @@ internal static partial class ModManager
             else if (AudioManagerPatcher.disabledSounds.Contains(s)) 
                 AudioManagerPatcher.disabledSounds.Remove(s);
         }
-    }
-    
+    }  
     public static bool ModInstalled(string mod) => Chainloader.PluginInfos.ContainsKey(mod);
 
     public static void TryRunMethod(Action actionToRun, bool causeCrashIfFail = true)

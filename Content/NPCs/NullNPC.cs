@@ -3,7 +3,6 @@ using DevTools.Extensions;
 using HarmonyLib;
 using NULL.Content;
 using NULL.CustomComponents;
-using NULL.Manager;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -16,12 +15,10 @@ namespace NULL.NPCs;
 public class NullNPC : Baldi
 {
     public bool slideMode;
-    internal static new AnimationCurve slapCurve;
-    internal static new AnimationCurve speedCurve;
+    internal static new AnimationCurve slapCurve, speedCurve;
     public static int attempts;
     public static float timeSinceExcitingThing;
-    public Cell currentCell;
-    public Cell previousCell;
+    public Cell currentCell, previousCell;
     float flickerDelay, _distance;
     List<Cell> lightsToChange = [];
     SoundObject hitSound;
@@ -29,6 +26,9 @@ public class NullNPC : Baldi
     public bool Hidden { get => !spriteBase; set => spriteBase.SetActive(!value); }
     public bool isGlitch;
     public new AudioManager AudMan => GetComponent<AudioManager>();
+
+    public const float ANGER_PER_HIT = 3.5f, ANGER_PER_HIT_TIMES = 3.1f, PAUSE_TIME = 1f, FLASH_TIME = 1.5f;
+
     void SetupPrefab()
     {
         baseAnger = 0.1f;
@@ -64,9 +64,9 @@ public class NullNPC : Baldi
     public void Hit(int val, bool pause = true)
     {
         if (val < 0) return;
-        GetComponent<Flash>()?.SetFlash(1.5f);
-        if (pause) this.Pause(1f);
-        GetAngry(IsTimes ? 2.25f : 3.125f * val);
+        GetComponent<Flash>()?.SetFlash(FLASH_TIME);
+        if (pause) this.Pause(PAUSE_TIME);
+        GetAngry(IsTimes ? ANGER_PER_HIT_TIMES : ANGER_PER_HIT * val);
         audMan.FlushQueue(true);
         audMan.QueueAudio(hitSound);
         if (!BossManager.Instance.BossActive)
@@ -84,7 +84,7 @@ public class NullNPC : Baldi
     public override void VirtualUpdate()
     {
         base.VirtualUpdate();
-        FlickerLights(!Hidden && !OptionsManager.DarkAmbience);
+        FlickerLights(!Hidden && !BasePlugin.darkAtmosphere.Value);
     }
     public new float Delay => slapCurve.Evaluate(anger + extraAnger) + 0.4f;
     public new float Speed => (speedCurve.Evaluate(anger) + baseSpeed + extraAnger) * 1.25f;
@@ -360,6 +360,7 @@ public class NullNPC_Preboss(NullNPC nullNpc, Elevator finalElevator) : NullNPC_
 {
     protected Vector3 elevatorPos = finalElevator.transform.position - finalElevator.Door.direction.ToVector3() * 10f;
     protected EnvironmentController ec = nullNpc.ec;
+    public const int MIN_DISTANCE_TO_BEGIN_RUSHING = 15;
     public override void Enter() // Null runs into the director's office
     {
         if (!IsTimes && ec.rooms.Any(x => x.category == RoomCategory.Office)) // ...but not in the BB Times!
@@ -374,7 +375,7 @@ public class NullNPC_Preboss(NullNPC nullNpc, Elevator finalElevator) : NullNPC_
     public override void Update()
     {
         base.Update();
-        if (ec.NavigableDistance(Singleton<CoreGameManager>.Instance.GetPlayer(0).transform.position.ToCell(), elevatorPos.ToCell(), PathType.Nav) < 15)
+        if (ec.NavigableDistance(Singleton<CoreGameManager>.Instance.GetPlayer(0).transform.position.ToCell(), elevatorPos.ToCell(), PathType.Nav) < MIN_DISTANCE_TO_BEGIN_RUSHING)
             nullNpc.behaviorStateMachine.ChangeState(new NullNPC_Rushing(npc, nullNpc, elevatorPos));
     }
     public override void DestinationEmpty()

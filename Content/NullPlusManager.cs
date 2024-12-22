@@ -29,13 +29,14 @@ public class NullPlusManager : MainGameManager
         ec.SpawnNPCs();
         ec.StartEventTimers();
 
-        if (OptionsManager.DarkAmbience)
+        if (BasePlugin.darkAtmosphere.Value)
         {
             foreach (var cell in ec.AllCells()) cell.SetLight(false); // When using ___ec.Set All Lights(false); swing doors still remain bright
             Shader.SetGlobalColor("_SkyboxColor", Color.black);
         }
         ec.standardDarkLevel = new Color(0.35f, 0.35f, 0.35f);
-        Core.GetHud(0).Hide(false);
+        // Core.GetHud(0).Hide(false);
+        HideHuds(false);
         ec.MakeNoise(Singleton<CoreGameManager>.Instance.GetPlayer(0).transform.position, 127);
         Bm?.RemoveAllProjectiles();
         Singleton<CoreGameManager>.Instance.GetHud(0).BaldiTv.gameObject.TryAddComponent<CustomComponents.NullTV>();
@@ -46,7 +47,7 @@ public class NullPlusManager : MainGameManager
         base.BeginPlay();
         PixelInternalAPI.Classes.GlobalAudioListenerModifier.Reset();
 
-        if (OptionsManager.DarkAmbience)
+        if (BasePlugin.darkAtmosphere.Value)
             Singleton<MusicManager>.Instance.QueueFile(darkAmbience, true);
 
         Singleton<MusicManager>.Instance.KillMidi();
@@ -67,7 +68,7 @@ public class NullPlusManager : MainGameManager
     public override void CollectNotebook(Notebook notebook)
     {
         base.CollectNotebook(notebook);
-        if (OptionsManager.DarkAmbience)
+        if (BasePlugin.darkAtmosphere.Value)
             ec.MakeNoise(notebook.transform.position, 69);
     }
     public override void LoadNextLevel()

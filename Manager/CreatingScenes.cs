@@ -48,12 +48,15 @@ internal static partial class ModManager
                 ld.forcedNpcs = [];
             }
             ld.potentialBaldis = [new() { selection = m.Get<NullNPC>(!ld.name.Contains("GLITCH") ? "NULL" : "NULLGLITCH"), weight = 100 }];
+
         } // Basically, does the same thing as GeneratorManagement.Register
 
         SceneObject[] objs = Resources.FindObjectsOfTypeAll<SceneObject>();
         Dictionary<LevelObject, CustomLevelObject>[] oldToNewMapping = new Dictionary<LevelObject, CustomLevelObject>[4];
         for (int i = 0; i < oldToNewMapping.Length; i++)
             oldToNewMapping[i] = [];
+
+        Dictionary<SceneObject, SceneObject> oldToNewMapping_Scenes = new Dictionary<SceneObject, SceneObject>();
 
         #endregion
 
@@ -117,20 +120,17 @@ internal static partial class ModManager
                 scene.shopItems = [.. obj.shopItems.ReplaceAllAndReturn(x => x.selection.itemType == Items.Apple, new WeightedItemObject() { selection = PixelInternalAPI.Extensions.GenericExtensions.FindResourceObjectByName<ItemObject>("ChalkEraser"), weight = 100 })];
                 scene.totalShopItems = obj.totalShopItems;
                 scene.mapPrice = obj.mapPrice;
-                #endregion
 
-                #region Set level objects params
-                foreach (var kp in m_nullLevels)
-                {
-                    kp.Value.shopItems = scene.shopItems;
-                    kp.Value.totalShopItems = scene.totalShopItems;
-                    kp.Value.mapPrice = scene.mapPrice;
-                }
+               // scene.previousLevels = obj.previousLevels;
+                scene.skybox = obj.skybox;
+                scene.usesMap = obj.usesMap;
                 #endregion
 
                 scene.MarkAsNeverUnload();
                 nullLevels.AddRange(m_nullLevels);
                 nullScenes.Add(scene);
+
+                oldToNewMapping_Scenes.Add(obj, scene);
             }
         }
 
@@ -375,10 +375,17 @@ internal static partial class ModManager
             {
                 kvp.Value.previousLevels = new LevelObject[kvp.Key.previousLevels.Length];
                 for (int i = 0; i < kvp.Key.previousLevels.Length; i++)
-                {
                     kvp.Value.previousLevels[i] = dictionary[kvp.Key.previousLevels[i]];
-                }
             }
+        }
+        #endregion
+
+        #region Adding previous levels for scenes
+        foreach (var kvp in oldToNewMapping_Scenes)
+        {
+            kvp.Value.previousLevels = new SceneObject[kvp.Key.previousLevels.Length];
+            for (int i = 0; i < kvp.Key.previousLevels.Length; i++)
+                kvp.Value.previousLevels[i] = oldToNewMapping_Scenes[kvp.Key.previousLevels[i]];
         }
         #endregion
     }

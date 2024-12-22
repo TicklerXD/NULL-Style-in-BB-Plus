@@ -37,8 +37,7 @@ internal class CoreGamePatcher
 #if CHEAT
         if (Singleton<PlayerFileManager>.Instance.fileName == "Test") return true;
 #endif
-
-        Core.SetLives(0);
+        Core.SetLives(0, true);
         nullNpc.transform.position = pm.transform.position + pm.transform.forward;
         Core.Pause(false);
         return false;
@@ -52,7 +51,8 @@ internal class CoreGamePatcher
         {
             try { Object.Destroy(canvas.gameObject); }
             catch { }
-            __instance.GetHud(0).Hide(true);
+            // __instance.GetHud(0).Hide(true);
+            HideHuds(true);
             __instance.audMan.Play("NullEnd");
 
             float time = 0f;

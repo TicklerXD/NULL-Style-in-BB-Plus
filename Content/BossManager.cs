@@ -16,7 +16,7 @@ public class BossManager : MonoBehaviour
     public static BossManager Instance { get; private set; }
     public bool BossActive { get; set; } = false;
     public bool PlayerHasProjectile { get; set; } = false;
-    public int health = 10;
+    public int health = BasePlugin.nullHealth.Value;
     public bool bossTransitionWaiting = false, holdBeat = true;
     readonly float initMusSpeed = 0.8f;
     MusicManager MusMan { get => Singleton<MusicManager>.Instance; }
@@ -42,7 +42,8 @@ public class BossManager : MonoBehaviour
         RemoveAllProjectiles();
         ec.StopAllCoroutines();
         MusMan.StopFile();
-        Core.GetHud(0).Hide(true);
+        //Core.GetHud(0).Hide(true);
+        HideHuds(true);
         freezeElevators = false;
         ForceCloseAllElevators();
         StopAllEvents();
@@ -103,6 +104,7 @@ public class BossManager : MonoBehaviour
             bossTransitionWaiting = true;
             Singleton<BaseGameManager>.Instance.StartCoroutine(NullPlusManager.AngerGlitch(8.5f));
         }
+
         mdf.baseStats["walkSpeed"] = mdf.baseStats["runSpeed"];
 
         if (health >= 0)

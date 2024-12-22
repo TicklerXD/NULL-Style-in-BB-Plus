@@ -84,14 +84,14 @@ public static class ExtraVariables
         }
     }
 
-    public static void StartEvent(RandomEventType type)
+    public static void StartEvent(RandomEventType type, System.Random rng = null)
     {
         var RandomEvents = Resources.FindObjectsOfTypeAll<RandomEvent>();
         var randomEvent = Instantiate(RandomEvents.OfType<RandomEvent>().FirstOrDefault(x => x.Type == type));
         var controlledRNG = FindObjectOfType<LevelBuilder>().controlledRNG;
         randomEvent.Initialize(ec, controlledRNG);
         randomEvent.SetEventTime(controlledRNG);
-        randomEvent.AfterUpdateSetup();
+        randomEvent.AfterUpdateSetup(rng ?? new System.Random());
         randomEvent.Begin();
     }
 
@@ -131,7 +131,7 @@ public static class ExtraVariables
 
         gameLoader.gameObject.SetActive(true);
         gameLoader.cgmPre = PixelInternalAPI.Extensions.GenericExtensions.FindResourceObject<CoreGameManager>();
-        var scene = customScene ?? gameLoader.list.scenes[Singleton<ModdedFileManager>.Instance.saveData.levelId];
+        var scene = customScene ?? Singleton<ModdedFileManager>.Instance.saveData.level;
 
         if (!saveAvailable)
         {
@@ -160,5 +160,12 @@ public static class ExtraVariables
             Singleton<ModdedFileManager>.Instance.DeleteSavedGame();
 
         return scene;
+    }
+
+    public static void HideHuds(bool val)
+    {
+        var huds = Singleton<CoreGameManager>.Instance.huds;
+        foreach (var hud in huds)
+            hud?.Hide(val);
     }
 }

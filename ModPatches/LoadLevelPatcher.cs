@@ -1,7 +1,7 @@
 ﻿using DevTools;
+using DevTools.Extensions;
 using HarmonyLib;
 using MTM101BaldAPI;
-using NULL.Manager;
 using static NULL.Manager.ModManager;
 using static System.Text.RegularExpressions.Regex;
 
@@ -29,7 +29,7 @@ internal class LevelLoaderPatcher
         if (sceneObject is null || sceneObject.levelObject is null || !nullLevels.ContainsValue((CustomLevelObject)sceneObject.levelObject))
             return;
 
-        sceneObject.levelObject = nullLevels[GetLevelKey(sceneObject.levelObject.name, GlitchStyle, OptionsManager.Characters)];
+        sceneObject.SetLevel(nullLevels[GetLevelKey(sceneObject.levelObject.name, GlitchStyle, BasePlugin.characters.Value)]);
 
         if (IsMatch(sceneObject.levelTitle, @"^N\d$") && sceneObject.levelObject.name.Contains("GLITCH"))
             sceneObject.levelTitle = sceneObject.levelTitle.Replace("N", "G");

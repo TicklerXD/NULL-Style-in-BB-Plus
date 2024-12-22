@@ -98,7 +98,7 @@ internal class BBTimesCompat
         new TextCodeMatch(OpCodes.Ldarg_0))
         .InsertAndAdvance(Transpilers.EmitDelegate(() =>
         {
-            if (OptionsManager.Characters || NullPlusManager.instance.nullNpc.isGlitch || ModManager.GlitchStyle) return;
+            if (BasePlugin.characters.Value || NullPlusManager.instance.nullNpc.isGlitch || ModManager.GlitchStyle) return;
 
             var n = NullPlusManager.instance.nullNpc;
             var aud = n.AudMan;

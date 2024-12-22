@@ -39,9 +39,9 @@ public static class CellsExtensions // Most of the extensions were created speci
     ///</summary>
     ///<param name="shape">The shape of the starting cell.</param>
     ///<returns>The cell of the specified shape with the maximum count of free cells.</returns>
-    public static Cell GetCellOfShape_WithMaxFreeCells(TileShape shape)
+    public static Cell GetCellOfShape_WithMaxFreeCells(TileShapeMask shape)
     {
-        var cornersInHallway = (from x in ec.mainHall.GetTilesOfShape([shape], true) select x).ToList();
+        var cornersInHallway = (from x in ec.mainHall.GetTilesOfShape(shape, true) select x).ToList();
 
         int max = int.MinValue;
         foreach (var a in cornersInHallway)
